@@ -6,10 +6,10 @@
 | 2 | seat conflict -> 409, 10 parallel requests -> 1x201 + 9x409 | `02_api_conflict_demo.txt` | done (real gunicorn, 2 workers) |
 | 3 | structured JSON logs | `03_structured_logs.txt` | done |
 | 4 | CI run URL + image tag + digest | `04_ci_run.md` | done |
-| 5 | `docker compose ps` healthy + smoke test | `05_deploy_health.txt` | **fill after running on docker** |
-| 6 | failure drill output | `06_failure_drill.txt` | **fill after running on docker** |
-| 7 | backup -> delete data -> restore -> data back | `07_backup_restore.txt` | **fill after running on docker** |
-| 8 | rollback output | `08_rollback.txt` | **fill after running on docker** |
+| 5 | `docker compose ps` healthy + smoke test | `05_deploy_health.txt` | done (Docker + Compose + Nginx HTTPS) |
+| 6 | failure drill output | `06_failure_drill.txt` | done (db outage -> 503, recovery -> 200) |
+| 7 | backup -> delete data -> restore -> data back | `07_backup_restore.txt` | done (pg_dump + restore verification) |
+| 8 | rollback output | `08_rollback.txt` | done (image tag rollback demo) |
 
 How to capture evidence 5-8:
 ```bash

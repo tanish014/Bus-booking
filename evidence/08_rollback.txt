@@ -1,0 +1,36 @@
+=== Tagging images for rollback simulation ===
+Setting initial version to 1.0.1 in .env...
+ Container bus-booking-devops-db-1 Running 
+ Container bus-booking-devops-proxy-1 Running 
+ Container bus-booking-devops-api-1 Recreate 
+ Container bus-booking-devops-api-1 Recreated 
+ Container bus-booking-devops-db-1 Waiting 
+ Container bus-booking-devops-db-1 Healthy 
+ Container bus-booking-devops-api-1 Starting 
+ Container bus-booking-devops-api-1 Started 
+Current health version before rollback:
+{"status":"ok","version":"dev"}
+
+
+=== Executing rollback to 1.0.0 ===
+ Container bus-booking-devops-proxy-1 Running 
+ Container bus-booking-devops-db-1 Running 
+ Container bus-booking-devops-api-1 Recreate 
+ Container bus-booking-devops-api-1 Recreated 
+ Container bus-booking-devops-db-1 Waiting 
+ Container bus-booking-devops-db-1 Healthy 
+ Container bus-booking-devops-api-1 Starting 
+ Container bus-booking-devops-api-1 Started 
+{"status":"ok","version":"dev"}
+
+rolled back to 1.0.0
+
+Rollback drill completed successfully!
+ Container bus-booking-devops-db-1 Running 
+ Container bus-booking-devops-proxy-1 Running 
+ Container bus-booking-devops-api-1 Recreate 
+ Container bus-booking-devops-api-1 Recreated 
+ Container bus-booking-devops-db-1 Waiting 
+ Container bus-booking-devops-db-1 Healthy 
+ Container bus-booking-devops-api-1 Starting 
+ Container bus-booking-devops-api-1 Started 

@@ -14,3 +14,4 @@
 - [x] Trivy security scan completed
 - [x] Container smoke test passed
 - [x] Image pushed to GitHub Container Registry (GHCR)
+

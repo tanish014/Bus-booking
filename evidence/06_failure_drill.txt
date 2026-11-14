@@ -1,0 +1,24 @@
+== before ==
+{"database":"up","status":"ready"}
+
+== stopping db ==
+ Container bus-booking-devops-db-1 Stopping 
+ Container bus-booking-devops-db-1 Stopped 
+== during outage (expect 503 on /ready, /health still ok) ==
+{"database":"down","status":"not ready"}
+ -> 503
+{"status":"ok","version":"dev"}
+ -> 200
+== starting db again ==
+ Container bus-booking-devops-db-1 Starting 
+ Container bus-booking-devops-db-1 Started 
+try 1: /ready -> 200
+== recent api logs ==
+api-1  | [2026-11-14 14:30:07 +0000] [1] [ERROR] Worker (pid:58) exited with code 1
+api-1  | [2026-11-14 14:30:07 +0000] [1] [ERROR] Worker (pid:58) exited with code 1.
+api-1  | {"time": "2026-11-14T14:30:08Z", "level": "ERROR", "msg": "readiness failed", "error": "(psycopg2.OperationalError) could not translate host name \"db\" to address: Name or service not known\n\n(Background on this error at: https://sqlalche.me/e/20/e3q8)"}
+api-1  | {"time": "2026-11-14T14:30:08Z", "level": "INFO", "msg": "request", "request_id": "ec3f524486c0f22073e4f76b1d563c02", "method": "GET", "path": "/ready", "status": 503, "ms": 7957.2}
+api-1  | 172.20.0.3 - - [14/Nov/2026:14:30:08 +0000] "GET /ready HTTP/1.0" 503 41 "-" "curl/8.17.0"
+api-1  | 172.20.0.3 - - [14/Nov/2026:14:30:08 +0000] "GET /health HTTP/1.0" 200 32 "-" "curl/8.17.0"
+api-1  | {"time": "2026-11-14T14:30:09Z", "level": "INFO", "msg": "request", "request_id": "be7eba01140d4b72a778bd354b123315", "method": "GET", "path": "/ready", "status": 200, "ms": 14.1}
+api-1  | 172.20.0.3 - - [14/Nov/2026:14:30:09 +0000] "GET /ready HTTP/1.0" 200 35 "-" "curl/8.17.0"

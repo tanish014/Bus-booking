@@ -1,0 +1,56 @@
+=== Step 1: Create a booking ===
+health:
+{"status":"ok","version":"dev"}
+
+ready:
+{"database":"up","status":"ready"}
+
+booking 1 (expect 201):
+{"error":"seat already booked for this trip"}
+ -> 409
+booking 2 same seat (expect 409):
+{"error":"seat already booked for this trip"}
+ -> 409
+
+=== Step 2: Take database backup ===
+backup saved: backups/busdb_20261114_200031.sql.gz (4.0K)
+Latest backup file: backups/busdb_20261114_200031.sql.gz
+
+=== Step 3: Delete bookings to simulate data loss ===
+DELETE 1
+Seat map after data deletion (expect seat 21 to be AVAILABLE):
+"seat_no":21,"status":"AVAILABLE"
+
+=== Step 4: Restore database from backup ===
+stopping api so nobody writes during restore...
+ Container bus-booking-devops-proxy-1 Stopping 
+ Container bus-booking-devops-proxy-1 Stopped 
+ Container bus-booking-devops-api-1 Stopping 
+ Container bus-booking-devops-api-1 Stopped 
+NOTICE:  drop cascades to 4 other objects
+DETAIL:  drop cascades to table routes
+drop cascades to table stops
+drop cascades to table trips
+drop cascades to table bookings
+DROP SCHEMA
+CREATE SCHEMA
+ set_config 
+------------
+ 
+(1 row)
+
+ Container bus-booking-devops-db-1 Waiting 
+ Container bus-booking-devops-db-1 Healthy 
+ Container bus-booking-devops-api-1 Starting 
+ Container bus-booking-devops-api-1 Started 
+ Container bus-booking-devops-api-1 Waiting 
+ Container bus-booking-devops-api-1 Healthy 
+ Container bus-booking-devops-proxy-1 Starting 
+ Container bus-booking-devops-proxy-1 Started 
+restore finished from backups/busdb_20261114_200031.sql.gz
+
+=== Step 5: Verify restored data ===
+Seat map after restore (expect seat 21 to be BOOKED again):
+"seat_no":21,"status":"BOOKED"
+
+Backup and restore drill successful!

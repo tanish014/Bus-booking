@@ -1,0 +1,16 @@
+NAME                         IMAGE                 COMMAND                  SERVICE   CREATED              STATUS                        PORTS
+bus-booking-devops-api-1     bus-booking-api:dev   "sh -c 'python -m ap…"   api       About a minute ago   Up About a minute (healthy)   8000/tcp
+bus-booking-devops-db-1      postgres:16-alpine    "docker-entrypoint.s…"   db        About a minute ago   Up About a minute (healthy)   5432/tcp
+bus-booking-devops-proxy-1   nginx:1.27-alpine     "/docker-entrypoint.…"   proxy     About a minute ago   Up About a minute             0.0.0.0:8080->80/tcp, [::]:8080->80/tcp, 0.0.0.0:8443->443/tcp, [::]:8443->443/tcp
+health:
+{"status":"ok","version":"dev"}
+
+ready:
+{"database":"up","status":"ready"}
+
+booking 1 (expect 201):
+{"fare":450,"pnr":"PNRGPNPVMG6","seat_no":21,"status":"CONFIRMED","trip_id":1}
+ -> 201
+booking 2 same seat (expect 409):
+{"error":"seat already booked for this trip"}
+ -> 409

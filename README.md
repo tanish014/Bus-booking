@@ -1,6 +1,6 @@
 # Bus Booking API - Cloud Deployment & CI/CD
 
-**Student:** Tanish  |  **Reg. no:** _your reg number_  |  **Role:** DevOps & Cloud Engineering
+**Student:** Tanish  |  **Reg. no:** 12401986 |  **Role:** DevOps & Cloud Engineering
 **Project:** Cloud Deployment & CI/CD - Bus Booking Platform (Algions AI Labs)
 
 This project is a small bus trip + seat reservation API. The main goal is **not the app itself**,

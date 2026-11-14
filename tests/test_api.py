@@ -33,6 +33,13 @@ def booking(seat=5, **changes):
     return body
 
 
+# ---------- web UI ----------
+def test_index_page(client):
+    r = client.get("/")
+    assert r.status_code == 200
+    assert "BusGo" in r.get_data(as_text=True)
+
+
 # ---------- health ----------
 def test_health_and_ready(client):
     assert client.get("/health").status_code == 200

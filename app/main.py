@@ -9,7 +9,7 @@ import time
 import uuid
 from datetime import date, datetime, timezone
 
-from flask import Flask, g, jsonify, request
+from flask import Flask, g, jsonify, render_template, request
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import HTTPException
@@ -107,6 +107,11 @@ def create_app(engine=None):
 
     def error(msg, code):
         return jsonify({"error": msg}), code
+
+    # ---------- web UI ----------
+    @app.get("/")
+    def index():
+        return render_template("index.html")
 
     # ---------- health ----------
     @app.get("/health")

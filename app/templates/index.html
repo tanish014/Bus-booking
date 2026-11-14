@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BusGo - Smart Bus Booking System</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Navigation / Header -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <div class="logo-group">
+        <span class="logo-icon">🚌</span>
+        <div>
+          <h1 class="logo-title">BusGo Express</h1>
+          <p class="logo-subtitle">Cloud Native Bus Reservation Platform</p>
+        </div>
+      </div>
+      <div class="nav-right">
+        <div class="system-status" id="system-status">
+          <span class="status-indicator" id="status-dot"></span>
+          <span id="status-text">Checking system...</span>
+        </div>
+        <div class="author-badge">
+          <span>Student: <strong>Tanish</strong> (12401986)</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <div class="container tabs-container">
+    <nav class="tabs-nav">
+      <button class="tab-btn active" data-tab="booking-tab">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+        Book Tickets
+      </button>
+      <button class="tab-btn" data-tab="manage-tab">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        Manage Booking / PNR Status
+      </button>
+    </nav>
+  </div>
+
+  <!-- Global Alerts -->
+  <div class="container">
+    <div id="alert-box" class="alert hidden" role="alert"></div>
+  </div>
+
+  <!-- Main Content Area -->
+  <main class="container main-content">
+
+    <!-- TAB 1: Booking Workflow -->
+    <section id="booking-tab" class="tab-content active">
+      
+      <!-- Step 1: Route & Date Search Card -->
+      <div class="card search-card">
+        <div class="card-header">
+          <h2>1. Search Bus Routes</h2>
+          <p class="text-muted">Select origin, destination and your travel date</p>
+        </div>
+        <form id="search-form" class="search-form">
+          <div class="form-group">
+            <label for="route-select">Select Route</label>
+            <select id="route-select" class="form-control" required>
+              <option value="" disabled selected>Loading available routes...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="travel-date">Travel Date</label>
+            <input type="date" id="travel-date" class="form-control" required>
+          </div>
+          <div class="form-group form-btn-align">
+            <button type="submit" id="search-btn" class="btn btn-primary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              Find Trips
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Step 2: Available Trips -->
+      <div id="trips-section" class="card hidden">
+        <div class="card-header">
+          <h2>2. Available Trips</h2>
+          <p class="text-muted" id="trips-summary">Select a scheduled trip</p>
+        </div>
+        <div id="trips-list" class="trips-grid">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+
+      <!-- Step 3: Interactive Seat Map & Passenger Details -->
+      <div id="booking-section" class="card hidden">
+        <div class="card-header">
+          <h2>3. Select Seat & Passenger Info</h2>
+          <p class="text-muted" id="selected-trip-info">Trip details</p>
+        </div>
+
+        <div class="booking-grid">
+          <!-- Bus Seat Layout -->
+          <div class="seat-map-wrapper">
+            <div class="bus-header">
+              <div class="steering-wheel" title="Driver Cabin">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path><path d="M2 12h20"></path></svg>
+                <span>Driver</span>
+              </div>
+              <div class="bus-front-label">FRONT OF BUS</div>
+            </div>
+
+            <!-- Seat Legend -->
+            <div class="seat-legend">
+              <span class="legend-item"><span class="seat-box available"></span> Available</span>
+              <span class="legend-item"><span class="seat-box selected"></span> Selected</span>
+              <span class="legend-item"><span class="seat-box booked"></span> Booked</span>
+            </div>
+
+            <div id="seat-layout" class="seat-layout">
+              <!-- 40 seats rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- Passenger Details Form -->
+          <div class="booking-form-wrapper">
+            <h3>Passenger Details</h3>
+            <form id="booking-form" class="booking-form">
+              <div class="selected-seat-badge" id="selected-seat-display">
+                <span>Selected Seat: <strong>None</strong></span>
+                <span class="fare-tag" id="selected-fare-tag">Fare: ₹0</span>
+              </div>
+
+              <div class="form-group">
+                <label for="passenger-name">Full Name *</label>
+                <input type="text" id="passenger-name" class="form-control" placeholder="e.g. John Doe" required minlength="2">
+              </div>
+
+              <div class="form-row">
+                <div class="form-group col-half">
+                  <label for="passenger-age">Age *</label>
+                  <input type="number" id="passenger-age" class="form-control" placeholder="25" min="1" max="120" required>
+                </div>
+                <div class="form-group col-half">
+                  <label for="passenger-phone">Phone Number (10 Digits) *</label>
+                  <input type="tel" id="passenger-phone" class="form-control" placeholder="9876543210" pattern="[0-9]{10}" maxlength="10" required>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group col-half">
+                  <label for="boarding-stop">Boarding Stop *</label>
+                  <select id="boarding-stop" class="form-control" required></select>
+                </div>
+                <div class="form-group col-half">
+                  <label for="drop-stop">Drop Stop *</label>
+                  <select id="drop-stop" class="form-control" required></select>
+                </div>
+              </div>
+
+              <button type="submit" id="confirm-booking-btn" class="btn btn-success btn-block" disabled>
+                Confirm & Book Seat
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: Booking Confirmation Modal / Card -->
+      <div id="confirmation-card" class="card hidden confirmation-card">
+        <div class="success-banner">
+          <div class="success-icon">✓</div>
+          <h2>Booking Confirmed!</h2>
+          <p>Your bus ticket has been successfully booked.</p>
+        </div>
+        <div class="ticket-details" id="ticket-details-box">
+          <!-- Populated by JS -->
+        </div>
+        <div class="ticket-actions">
+          <button id="book-another-btn" class="btn btn-primary">Book Another Ticket</button>
+          <button id="print-ticket-btn" class="btn btn-outline" onclick="window.print()">Print Ticket</button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- TAB 2: Manage Booking / PNR Lookup -->
+    <section id="manage-tab" class="tab-content">
+      <div class="card pnr-card">
+        <div class="card-header">
+          <h2>Lookup or Cancel Reservation</h2>
+          <p class="text-muted">Enter your unique 10-character PNR code</p>
+        </div>
+        <form id="pnr-form" class="pnr-form">
+          <div class="pnr-search-bar">
+            <input type="text" id="pnr-input" class="form-control pnr-input-field" placeholder="Enter PNR (e.g. PNR3A8F2K9)" maxlength="15" required>
+            <button type="submit" class="btn btn-primary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              Search
+            </button>
+          </div>
+        </form>
+
+        <div id="pnr-result" class="pnr-result hidden">
+          <!-- Result rendered dynamically -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer with Live Architecture Info -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <p class="footer-text">
+        <strong>BusGo Reservation Platform</strong> — DevOps Final Project | Student: Tanish (12401986)
+      </p>
+      <div class="footer-badges">
+        <span class="badge">Nginx TLS Proxy (8443)</span>
+        <span class="badge">Gunicorn + Flask 3.0</span>
+        <span class="badge">PostgreSQL Database</span>
+        <span class="badge" id="app-version-badge">Version: dev</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

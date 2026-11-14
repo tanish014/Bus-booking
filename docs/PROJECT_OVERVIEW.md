@@ -201,3 +201,4 @@ sequenceDiagram
 3. **Automated Backups:** `backup.sh` runs `pg_dump` inside the container, pipes into `gzip`, and stores rolling timestamped backups in `backups/`.
 4. **Point-In-Time Restore:** `restore.sh` safely pauses incoming traffic, recreates the public schema, restores the gzip archive, and resumes traffic with zero data corruption.
 5. **Zero-Downtime Rollback:** `rollback.sh` allows instant image version rollback (`bus-booking-api:old_version`) in `.env` without triggering breaking database schema alterations.
+

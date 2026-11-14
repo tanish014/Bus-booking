@@ -12,8 +12,8 @@ it is how I build, ship, run, monitor, back up and recover it.
 
 | Path | What it is |
 |---|---|
-| `app/` | Flask API (`main.py`) and database code (`db.py`) |
-| `tests/` | 20 automated API tests (pytest) |
+| `app/` | Flask API (`main.py`), database code (`db.py`), templates (`index.html`), and static assets (`style.css`, `app.js`) |
+| `tests/` | 21 automated API and UI tests (pytest) |
 | `Dockerfile` | multi-stage build, runs as non-root user, has a healthcheck |
 | `docker-compose.yml` | api + PostgreSQL + nginx proxy, with volume and health checks |
 | `nginx/nginx.conf` | HTTPS reverse proxy, http -> https redirect |
@@ -26,6 +26,7 @@ it is how I build, ship, run, monitor, back up and recover it.
 
 | Method | Path | What it does |
 |---|---|---|
+| GET | `/` | Web UI - interactive booking, seat map, and PNR lookup |
 | GET | `/health` | liveness - app is running (no db check) |
 | GET | `/ready` | readiness - checks the database, returns 503 if db is down |
 | GET | `/routes` | routes with their stops |

@@ -1,0 +1,15 @@
+$ curl /health
+{"status":"ok","version":"1.0.0"}
+$ curl /ready
+{"database":"up","status":"ready"}
+$ POST /bookings (seat 21)  -> expect 201
+{"fare":450,"pnr":"PNRRH4JW96S","seat_no":21,"status":"CONFIRMED","trip_id":1}
+ HTTP 201
+$ POST /bookings (same seat) -> expect 409
+{"error":"seat already booked for this trip"}
+ HTTP 409
+--- 10 parallel requests for the same seat (30), 2 gunicorn workers ---
+      1 201
+      9 409
+--- rows in table ---
+confirmed bookings for trip 1 seat 30 = 1

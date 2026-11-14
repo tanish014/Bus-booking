@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+
+permissions:
+  contents: read
+  packages: write     # needed only to push the image to ghcr.io
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements-dev.txt
+      - name: Format check (black)
+        run: black --check -l 120 app tests
+      - name: Lint (flake8)
+        run: flake8 app tests
+      - name: Unit / API tests
+        run: pytest -v
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Image version = short commit sha
+        run: echo "VERSION=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+      - name: Build image
+        run: docker build --build-arg APP_VERSION=$VERSION -t bus-booking-api:$VERSION .
+      - name: Scan image with Trivy (HIGH/CRITICAL)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: bus-booking-api:${{ env.VERSION }}
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "0"        # report only for now, see README known limitations
+      - name: Smoke test the container
+        run: |
+          docker run -d --name t -p 8000:8000 -e AUTO_INIT_DB=1 -e DATABASE_URL=sqlite:////tmp/t.db bus-booking-api:$VERSION sh -c "gunicorn --workers 1 --bind 0.0.0.0:8000 'app.main:app_factory()'"
+          sleep 5
+          curl -f http://localhost:8000/health
+          docker logs t
+      - name: Log in to GitHub Container Registry
+        if: github.event_name == 'push'
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Push image
+        if: github.event_name == 'push'
+        run: |
+          IMAGE=ghcr.io/${{ github.repository_owner }}/bus-booking-api
+          docker tag bus-booking-api:$VERSION $IMAGE:$VERSION
+          docker tag bus-booking-api:$VERSION $IMAGE:latest
+          docker push $IMAGE:$VERSION
+          docker push $IMAGE:latest
+          echo "### Image pushed" >> $GITHUB_STEP_SUMMARY
+          echo "tag: \`$VERSION\`" >> $GITHUB_STEP_SUMMARY
+          docker inspect --format='digest: {{index .RepoDigests 0}}' $IMAGE:$VERSION >> $GITHUB_STEP_SUMMARY

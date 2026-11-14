@@ -37,7 +37,7 @@ jobs:
       - name: Build image
         run: docker build --build-arg APP_VERSION=$VERSION -t bus-booking-api:$VERSION .
       - name: Scan image with Trivy (HIGH/CRITICAL)
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.28.0
         with:
           image-ref: bus-booking-api:${{ env.VERSION }}
           severity: HIGH,CRITICAL

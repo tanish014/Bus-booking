@@ -9,6 +9,6 @@
 | 5 | `docker compose ps` healthy + smoke test | `05_deploy_health.txt` | done (Docker + Compose + Nginx HTTPS) |
 | 6 | failure drill output | `06_failure_drill.txt` | done (db outage -> 503, recovery -> 200) |
 | 7 | backup -> delete data -> restore -> data back | `07_backup_restore.txt` | done (pg_dump + restore verification) |
-| 8 | rollback output | `08_rollback.txt` | done (image tag rollback demo) |
+| 8 | rollback output | `08_rollback.txt` | done (image tag rollback demo ) |
 
 

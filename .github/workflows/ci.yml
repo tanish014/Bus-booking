@@ -37,12 +37,8 @@ jobs:
       - name: Build image
         run: docker build --build-arg APP_VERSION=$VERSION -t bus-booking-api:$VERSION .
       - name: Scan image with Trivy (HIGH/CRITICAL)
-        uses: aquasecurity/trivy-action@v0.28.0
-        with:
-          image-ref: bus-booking-api:${{ env.VERSION }}
-          severity: HIGH,CRITICAL
-          ignore-unfixed: true
-          exit-code: "0"        # report only for now, see README known limitations
+        run: |
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --severity HIGH,CRITICAL --ignore-unfixed --exit-code 0 bus-booking-api:${{ env.VERSION }}
       - name: Smoke test the container
         run: |
           docker run -d --name t -p 8000:8000 -e AUTO_INIT_DB=1 -e DATABASE_URL=sqlite:////tmp/t.db bus-booking-api:$VERSION sh -c "gunicorn --workers 1 --bind 0.0.0.0:8000 'app.main:app_factory()'"

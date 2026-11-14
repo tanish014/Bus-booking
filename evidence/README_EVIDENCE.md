@@ -5,7 +5,7 @@
 | 1 | lint + 20 tests passing | `01_lint_and_tests.txt` | done (run on my machine) |
 | 2 | seat conflict -> 409, 10 parallel requests -> 1x201 + 9x409 | `02_api_conflict_demo.txt` | done (real gunicorn, 2 workers) |
 | 3 | structured JSON logs | `03_structured_logs.txt` | done |
-| 4 | CI run URL + image tag + digest | `04_ci_run.md` | **fill after pushing to GitHub** |
+| 4 | CI run URL + image tag + digest | `04_ci_run.md` | done |
 | 5 | `docker compose ps` healthy + smoke test | `05_deploy_health.txt` | **fill after running on docker** |
 | 6 | failure drill output | `06_failure_drill.txt` | **fill after running on docker** |
 | 7 | backup -> delete data -> restore -> data back | `07_backup_restore.txt` | **fill after running on docker** |

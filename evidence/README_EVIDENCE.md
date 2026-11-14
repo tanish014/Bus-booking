@@ -11,20 +11,4 @@
 | 7 | backup -> delete data -> restore -> data back | `07_backup_restore.txt` | done (pg_dump + restore verification) |
 | 8 | rollback output | `08_rollback.txt` | done (image tag rollback demo) |
 
-How to capture evidence 5-8:
-```bash
-docker compose ps | tee evidence/05_deploy_health.txt
-./scripts/smoke-test.sh | tee -a evidence/05_deploy_health.txt
-./scripts/failure-drill.sh 2>&1 | tee evidence/06_failure_drill.txt
 
-# backup/restore proof
-./scripts/smoke-test.sh                       # creates a booking, note the PNR
-./scripts/backup.sh
-docker compose exec db psql -U busapp -d busdb -c "DELETE FROM bookings;"
-curl -k https://localhost:8443/trips/1/seats  # seat shows AVAILABLE again = data lost
-./scripts/restore.sh backups/<latest>.sql.gz
-curl -k https://localhost:8443/trips/1/seats  # seat 21 BOOKED again = restored
-# paste all this into 07_backup_restore.txt
-
-./scripts/rollback.sh <old-tag> 2>&1 | tee evidence/08_rollback.txt
-```
